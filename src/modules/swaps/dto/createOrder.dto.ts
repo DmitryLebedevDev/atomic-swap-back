@@ -4,41 +4,37 @@ import {
   IsString,
   Validate,
   ValidatorConstraint,
-  ValidatorConstraintInterface
-} from "class-validator";
-import { EqualsOr } from "src/common/validators/EqualsOr";
+  ValidatorConstraintInterface,
+} from 'class-validator';
+import { EqualsOr } from 'src/common/validators/EqualsOr';
 
 @ValidatorConstraint()
 export class ValidatePair implements ValidatorConstraintInterface {
-  validate(_, {object}: any) {
-    return object.fromValuePair !== object.toValuePair
+  validate(_, { object }: any) {
+    return object.fromValuePair !== object.toValuePair;
   }
   defaultMessage() {
-    return 'it is impossible to exchange coins in the same network'
+    return 'it is impossible to exchange coins in the same network';
   }
 }
 
 export class CreateOrderDto {
   @IsNotEmpty()
-  @IsString()
-  fromAddress: string
-
-  @IsNotEmpty()
   @IsNumber()
-  fromValue: number
+  fromValue: number;
 
   @IsNotEmpty()
   @IsString()
   @Validate(EqualsOr, ['testnet', 'regnet'])
   @Validate(ValidatePair)
-  fromValuePair: 'testnet' | 'regnet'
+  fromValuePair: 'testnet' | 'regnet';
 
   @IsNotEmpty()
   @IsNumber()
-  toValue: number
+  toValue: number;
 
   @IsNotEmpty()
   @IsString()
   @Validate(EqualsOr, ['testnet', 'regnet'])
-  toValuePair: 'testnet' | 'regnet'
+  toValuePair: 'testnet' | 'regnet';
 }
