@@ -28,19 +28,28 @@ export class SwapsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
   constructor(private orderService: OrdersService) {}
 
+  @SubscribeMessage('acceptOrder')
+  @FormatResultWs()
+  acceptOrder(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() orderId: string,
+  ) {
+    console.log(orderId);
+    this.server.emit('deleteOrder', orderId);
+  }
   @SubscribeMessage('newOrder')
   @FormatResultWs()
   newOrder(
     @ConnectedSocket() socket: Socket,
     @MessageBody() createOrderDto: CreateOrderDto,
   ) {
-    const order = this.orderService.createOrder(createOrderDto);
+    const order = this.orderService.createOrder(createOrderDto, socket.id);
     this.server.emit('newOrder', order);
   }
 
   handleConnection(socket: Socket) {
     console.log('connect', socket.id);
-    socket.emit('activeOrders', this.orderService.getOrders());
+    socket.emit('openOrders', this.orderService.getOrders());
   }
   handleDisconnect(socket: Socket) {
     console.log('disconnect', socket.id);
