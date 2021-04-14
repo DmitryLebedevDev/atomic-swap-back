@@ -32,10 +32,14 @@ export class SwapsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @FormatResultWs()
   acceptOrder(
     @ConnectedSocket() socket: Socket,
-    @MessageBody() orderId: string,
+    @MessageBody() orderId: number,
   ) {
-    console.log(orderId);
-    this.server.emit('deleteOrder', orderId);
+    const order = this.orderService.getOrderById(orderId);
+    if (order && this.server.sockets.connected[order.creator]) {
+      this.server.sockets.connected[order.creator].emit('acceptOrder', orderId);
+      this.server.emit('deleteOrder', orderId);
+      this.orderService.deleteOrder(orderId);
+    }
   }
   @SubscribeMessage('newOrder')
   @FormatResultWs()
@@ -48,7 +52,6 @@ export class SwapsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleConnection(socket: Socket) {
-    console.log('connect', socket.id);
     socket.emit('openOrders', this.orderService.getOrders());
   }
   handleDisconnect(socket: Socket) {

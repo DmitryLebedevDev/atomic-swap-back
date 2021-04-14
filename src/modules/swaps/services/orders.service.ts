@@ -4,36 +4,22 @@ import { CreateOrderDto } from '../dto/createOrder.dto';
 
 @Injectable()
 export class OrdersService {
-  private orders: Map<number, Iorder> = new Map([
-    [
-      1,
-      {
-        id: 1,
-        creator: '1231',
-        fromValue: 12,
-        fromValuePair: 'regnet',
-        toValue: 12,
-        toValuePair: 'testnet',
-      },
-    ],
-    [
-      2,
-      {
-        id: 2,
-        creator: '1231',
-        fromValue: 12,
-        fromValuePair: 'regnet',
-        toValue: 12,
-        toValuePair: 'testnet',
-      },
-    ],
-  ]);
+  private orders: Map<number, Iorder> = new Map();
 
   createOrder(orderDto: CreateOrderDto, creator: string) {
     const order = { id: +new Date(), creator, ...orderDto };
     this.orders.set(order.id, order);
 
     return order;
+  }
+  deleteOrder(id: number) {
+    return this.orders.delete(id);
+  }
+  isExistOrder(id: number) {
+    return this.orders.has(id);
+  }
+  getOrderById(id: number): Iorder {
+    return this.orders.get(id);
   }
   getOrders() {
     return Array.from(this.orders.values());
