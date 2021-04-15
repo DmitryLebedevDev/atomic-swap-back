@@ -48,7 +48,8 @@ export class SwapsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() createOrderDto: CreateOrderDto,
   ) {
     const order = this.orderService.createOrder(createOrderDto, socket.id);
-    this.server.emit('newOrder', order);
+    socket.broadcast.emit('newOrder', order);
+    return order.id;
   }
 
   handleConnection(socket: Socket) {
