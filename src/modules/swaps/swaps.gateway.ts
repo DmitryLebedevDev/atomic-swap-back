@@ -13,8 +13,9 @@ import { Server, Socket } from 'socket.io';
 import { CreateOrderDto } from './dto/createOrder.dto';
 import { BadRequestTransformToWsExeptionAndHandle } from '../../exeptionFilters/BadRequestTransformToWsExeptionAndHandle.filter';
 import { HandleWsExeption } from '../../exeptionFilters/HandleWsExeption.filter';
-import { OrdersService } from './services/orders.service';
+import { OrdersService } from './services/Orders.service';
 import { FormatResultWs } from 'src/decorators/FormatResultWs';
+import { ActiveOrdersService } from './services/ActiveOrders.service';
 
 //this for handle errors after failed validate dto
 @UseFilters(
@@ -26,7 +27,10 @@ import { FormatResultWs } from 'src/decorators/FormatResultWs';
 export class SwapsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
-  constructor(private orderService: OrdersService) {}
+  constructor(
+    private orderService: OrdersService,
+    private activeOrdersService: ActiveOrdersService,
+  ) {}
 
   @SubscribeMessage('acceptOrder')
   @FormatResultWs()

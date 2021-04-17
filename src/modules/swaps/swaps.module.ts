@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { OrdersService } from './services/orders.service';
+import { ActiveOrdersService } from './services/ActiveOrders.service';
+import { OrdersService } from './services/Orders.service';
 import { SwapsGateway } from './swaps.gateway';
 import { SwapsService } from './swaps.service';
 
 @Module({
-  providers: [SwapsService, OrdersService, SwapsGateway],
+  providers: [SwapsService, OrdersService, ActiveOrdersService, SwapsGateway],
 })
 export class SwapsModule {
   constructor() {}
