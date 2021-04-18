@@ -7,7 +7,6 @@ import {
   OnGatewayDisconnect,
   MessageBody,
   ConnectedSocket,
-  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { CreateOrderDto } from './dto/createOrder.dto';
@@ -31,6 +30,63 @@ export class SwapsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private orderService: OrdersService,
     private activeOrdersService: ActiveOrdersService,
   ) {}
+  @SubscribeMessage('endActiveOrder')
+  @FormatResultWs()
+  endActiveOrder(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() { id }: { id: number },
+  ) {
+    const { creator } = this.activeOrdersService.getById(id);
+    if (creator === socket.id) {
+      this.activeOrdersService.deleteById(id);
+    }
+  }
+
+  @SubscribeMessage('sendFromPairHTLC')
+  @FormatResultWs()
+  sendFromPairHTLC(@MessageBody() message: { id: number; txid: string }) {
+    const { id } = message;
+    const activeOrder = this.activeOrdersService.getById(id);
+    this.server.sockets.connected[activeOrder.acceptor].emit(
+      'sendFromPairHTLC',
+      message,
+    );
+  }
+  @SubscribeMessage('sendToPairHTLC')
+  @FormatResultWs()
+  sendToPairHTLC(
+    @MessageBody() message: { id: number; txid: string; secretNumHash: string },
+  ) {
+    const { id } = message;
+    const activeOrder = this.activeOrdersService.getById(id);
+    this.server.sockets.connected[activeOrder.creator].emit(
+      'sendToPairPubKey',
+      message,
+    );
+  }
+
+  @SubscribeMessage('sendToPairPubKey')
+  @FormatResultWs()
+  sendToPairPubKey(@MessageBody() message: { id: number; hexPubKey: string }) {
+    const { id } = message;
+    const activeOrder = this.activeOrdersService.getById(id);
+    this.server.sockets.connected[activeOrder.creator].emit(
+      'sendToPairPubKey',
+      message,
+    );
+  }
+  @SubscribeMessage('sendFromPairPubKey')
+  @FormatResultWs()
+  sendFromPairPubKey(
+    @MessageBody() message: { id: number; hexPubKey: string },
+  ) {
+    const { id } = message;
+    const activeOrder = this.activeOrdersService.getById(id);
+    this.server.sockets.connected[activeOrder.acceptor].emit(
+      'sendFromPairPubKey',
+      message,
+    );
+  }
 
   @SubscribeMessage('acceptOrder')
   @FormatResultWs()
@@ -43,6 +99,11 @@ export class SwapsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.server.sockets.connected[order.creator].emit('acceptOrder', orderId);
       this.server.emit('deleteOrder', orderId);
       this.orderService.deleteOrder(orderId);
+      this.activeOrdersService.createActiveOrder(
+        order.id,
+        order.creator,
+        socket.id,
+      );
     }
   }
   @SubscribeMessage('newOrder')

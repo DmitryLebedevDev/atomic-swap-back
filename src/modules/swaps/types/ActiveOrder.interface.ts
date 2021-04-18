@@ -1,5 +1,3 @@
-import { Iorder } from './Order.interface';
-
 export interface IactiveOrder {
   id: number;
 
