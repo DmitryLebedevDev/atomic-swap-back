@@ -3,14 +3,39 @@ import * as Client from 'bitcoin-core'
 
 @Injectable()
 export class BlockchainService {
+  client: InstanceType<typeof Client>
   constructor() {
-    const client = new Client({
-      network: 'regtest',
-      username: 'test',
-      password: '1234',
-      port: 18443
+    this.client = new Client({
+      network: process.env.BITCOIN_CORE_NETWORK,
+      username: process.env.BITCOIN_CORE_USER,
+      password: process.env.BITCOIN_CORE_PASSWORD,
+      port: process.env.BITCOIN_CORE_PORT
     });
+  }
 
-    client.listUnspent(6, 999999, ['mzqv4ZydSdtKw1QtpGEcR148GgJrYr959o']).then((help) => console.log(help));
+  async getAddressBalance(address: string) {
+    const listUnspent
+      = await this.client.listUnspent(6, 999999, [address]);
+
+    return listUnspent.reduce(
+      (sum, {amount}) => sum+amount
+      , 0
+    )
+  }
+  async getAddressUnspent(address: string) {
+    const listUnspent
+      = await this.client.listUnspent(6, 999999, [address]);
+    console.log(listUnspent);
+    return listUnspent.map(
+      ({txid, amount, scriptPubKey, vout: n, confirmations}) => ({
+        txid,
+        value: amount,
+        script_pub_key: {
+          hex: scriptPubKey
+        },
+        n,
+        confirmations
+      })
+    )
   }
 }
