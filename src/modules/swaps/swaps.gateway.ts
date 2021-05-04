@@ -68,6 +68,7 @@ export class SwapsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('sendToPairPubKey')
   @FormatResultWs()
   sendToPairPubKey(@MessageBody() message: { id: number; hexPubKey: string }) {
+    console.log(message, 'sendToPairPubKey');
     const { id } = message;
     const activeOrder = this.activeOrdersService.getById(id);
     this.server.sockets.connected[activeOrder.creator].emit(
@@ -80,6 +81,7 @@ export class SwapsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   sendFromPairPubKey(
     @MessageBody() message: { id: number; hexPubKey: string },
   ) {
+    console.log(message, 'sendFromPairPubKey');
     const { id } = message;
     const activeOrder = this.activeOrdersService.getById(id);
     this.server.sockets.connected[activeOrder.acceptor].emit(
