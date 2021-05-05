@@ -38,4 +38,7 @@ export class BlockchainService {
       })
     )
   }
+  async pushTx(hex: string) {
+    return this.client.sendRawTransaction(hex);
+  }
 }

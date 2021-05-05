@@ -1,5 +1,6 @@
-import {Controller, Get, Param} from "@nestjs/common";
+import {Body, Controller, Get, Param, Post} from "@nestjs/common";
 import {BlockchainService} from "./blockchain.service";
+import {PushTxTransactionDto} from "./dto/pushTxTransaction.dto";
 
 @Controller('/')
 export class BlockchainController {
@@ -35,6 +36,20 @@ export class BlockchainController {
       return {
         status: false,
         massage: 'incorrect address'
+      }
+    }
+  }
+  @Post('/pushtx')
+  async pushTx(@Body() pushTxHex: PushTxTransactionDto) {
+    try {
+      return {
+        status: true,
+        txid: await this.blockchainService.pushTx(pushTxHex.hex)
+      }
+    } catch (error) {
+      return {
+        status: false,
+        message: error.message
       }
     }
   }
