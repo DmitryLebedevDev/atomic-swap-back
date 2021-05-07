@@ -53,8 +53,8 @@ export class BlockchainController {
       }
     }
   }
-  @Post('/getInfoTxOutput/:txid')
-  async getInfoTxOutput(@Query('n', ParseIntPipe) n) {
+  @Post('/getVinForUtxoTransaction/:txid')
+  async getVinForUtxoTransaction(@Query('n', ParseIntPipe) n) {
 
   }
 }

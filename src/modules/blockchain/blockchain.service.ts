@@ -1,5 +1,6 @@
 import {Injectable} from "@nestjs/common";
 import * as Client from 'bitcoin-core'
+import {getInfoTxOutputError, Iblock, Itransaction} from "./types";
 
 @Injectable()
 export class BlockchainService {
@@ -38,8 +39,52 @@ export class BlockchainService {
       })
     )
   }
-  async getInfoTxOutput(txid: string, n: number) {
+  async getVinForUtxoTransaction(txid: string, n: number) {
     const transaction = await this.client.getTransaction(txid);
+    if(!transaction || transaction.blockhash) {throw new Error(
+      String(getInfoTxOutputError.notExistTransaction)
+    )}
+    if(transaction.vout.length <= n) {throw new Error(
+      String(getInfoTxOutputError.notExistVout)
+    )}
+    const utxoExist = await this.client.getTxout(txid, n);
+    if(utxoExist) {throw new Error(
+      String(getInfoTxOutputError.utxoNotUnspent)
+    )}
+    let block: Iblock = await this.client.getBlock(transaction.blockhash);
+    do {
+      const vin
+        = await this.findVinOfUtxoTransactionInBlock(block, txid, n);
+      if(vin) {
+        return vin
+      }
+      if(block.nextblockhash) {
+        block = await this.client.getBlock(block.nextblockhash)
+      } else {
+        break;
+      }
+    }
+    while (true)
+  }
+  private async findVinOfUtxoTransactionInBlock(
+    block: Iblock, txid: string, n: number
+  ) {
+    const blockTransactions = await Promise.all(
+      block.tx.map(txid => this.getTransaction(txid))
+    )
+    const transaction = blockTransactions.find(
+      ({vin}) => vin.find(
+        vin => vin.txid === txid && vin.vout === n
+      )
+    )
+
+    return transaction ?
+      transaction.vin.find(
+        vin => vin.txid === txid && vin.vout === n
+      ) : null
+  }
+  async getTransaction(txid: string): Promise<Itransaction> {
+    return this.client.getrawtransaction(txid, true)
   }
   async pushTx(hex: string) {
     return this.client.sendRawTransaction(hex);
