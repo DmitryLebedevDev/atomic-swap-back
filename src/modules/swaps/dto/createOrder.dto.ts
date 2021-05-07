@@ -26,7 +26,7 @@ export class CreateOrderDto {
   @IsNotEmpty()
   @IsString()
   @Validate(EqualsOr, ['testnet', 'regnet'])
-  @Validate(ValidatePair)
+  //@Validate(ValidatePair)
   fromValuePair: 'testnet' | 'regnet';
 
   @IsNotEmpty()
@@ -35,6 +35,6 @@ export class CreateOrderDto {
 
   @IsNotEmpty()
   @IsString()
-  @Validate(EqualsOr, ['testnet', 'regnet'])
+  //@Validate(EqualsOr, ['testnet', 'regnet'])
   toValuePair: 'testnet' | 'regnet';
 }

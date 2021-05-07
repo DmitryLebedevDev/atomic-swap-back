@@ -38,6 +38,9 @@ export class BlockchainService {
       })
     )
   }
+  async getInfoTxOutput(txid: string, n: number) {
+    const transaction = await this.client.getTransaction(txid);
+  }
   async pushTx(hex: string) {
     return this.client.sendRawTransaction(hex);
   }

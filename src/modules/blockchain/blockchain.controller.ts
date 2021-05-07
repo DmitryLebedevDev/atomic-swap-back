@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, Post} from "@nestjs/common";
+import {Body, Controller, Get, Param, ParseIntPipe, Post, Query} from "@nestjs/common";
 import {BlockchainService} from "./blockchain.service";
 import {PushTxTransactionDto} from "./dto/pushTxTransaction.dto";
 
@@ -52,5 +52,9 @@ export class BlockchainController {
         message: error.message
       }
     }
+  }
+  @Post('/getInfoTxOutput/:txid')
+  async getInfoTxOutput(@Query('n', ParseIntPipe) n) {
+
   }
 }
