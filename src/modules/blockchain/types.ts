@@ -16,7 +16,20 @@ export interface Ivin {
   },
   sequence: number
 }
+export interface Ivout {
+  value: 50.00000000,
+  n: 0,
+  scriptPubKey: {
+    asm: string,
+    hex: string,
+    reqSigs?: number,
+    type: string,
+    addresses: string[]
+  }
+}
 export interface Itransaction {
   txid: string,
-  vin: Ivin[]
+  vin: Ivin[],
+  blockhash?: string,
+  vout: Ivout[]
 }

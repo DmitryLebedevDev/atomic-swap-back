@@ -53,8 +53,20 @@ export class BlockchainController {
       }
     }
   }
-  @Post('/getVinForUtxoTransaction/:txid')
-  async getVinForUtxoTransaction(@Query('n', ParseIntPipe) n) {
-
+  @Get('/getVinForUtxoTransaction/:txid')
+  async getVinForUtxoTransaction(@Param('txid') txid, @Query('n', ParseIntPipe) n) {
+    try {
+      const vin = await this.blockchainService.getVinForUtxoTransaction(txid, n);
+      console.log(vin)
+      return {
+        status: true,
+        vin
+      }
+    } catch (e) {
+      return {
+        status: false,
+        message: e.message
+      }
+    }
   }
 }

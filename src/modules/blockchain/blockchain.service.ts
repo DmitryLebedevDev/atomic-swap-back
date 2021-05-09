@@ -40,14 +40,14 @@ export class BlockchainService {
     )
   }
   async getVinForUtxoTransaction(txid: string, n: number) {
-    const transaction = await this.client.getTransaction(txid);
-    if(!transaction || transaction.blockhash) {throw new Error(
+    const transaction = await this.getTransaction(txid);
+    if(!transaction || !transaction.blockhash) {throw new Error(
       String(getInfoTxOutputError.notExistTransaction)
     )}
     if(transaction.vout.length <= n) {throw new Error(
       String(getInfoTxOutputError.notExistVout)
     )}
-    const utxoExist = await this.client.getTxout(txid, n);
+    const utxoExist = await this.client.getTxOut(txid, n);
     if(utxoExist) {throw new Error(
       String(getInfoTxOutputError.utxoNotUnspent)
     )}
@@ -65,6 +65,9 @@ export class BlockchainService {
       }
     }
     while (true)
+    throw new Error(
+      String(getInfoTxOutputError.notExistVout)
+    )
   }
   private async findVinOfUtxoTransactionInBlock(
     block: Iblock, txid: string, n: number
@@ -84,7 +87,7 @@ export class BlockchainService {
       ) : null
   }
   async getTransaction(txid: string): Promise<Itransaction> {
-    return this.client.getrawtransaction(txid, true)
+    return this.client.getRawTransaction(txid, true)
   }
   async pushTx(hex: string) {
     return this.client.sendRawTransaction(hex);
