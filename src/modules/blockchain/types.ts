@@ -9,7 +9,7 @@ export interface Iblock {
 }
 export interface Ivin {
   txid: string,
-  vout: 0,
+  vout: number,
   scriptSig: {
     asm: string,
     hex: string
@@ -17,8 +17,8 @@ export interface Ivin {
   sequence: number
 }
 export interface Ivout {
-  value: 50.00000000,
-  n: 0,
+  value: number,
+  n: number,
   scriptPubKey: {
     asm: string,
     hex: string,

@@ -12,14 +12,14 @@ export class BlockchainController {
     try {
       const balance = await this.blockchainService.getAddressBalance(address);
       return {
-        status: true,
+        success: true,
         address: {
           total: balance
         }
       };
     } catch (e) {
       return {
-        status: false,
+        success: false,
         message: 'incorrect address'
       }
     }
@@ -29,12 +29,12 @@ export class BlockchainController {
     try {
       const unspent = await this.blockchainService.getAddressUnspent(address);
       return {
-        status: true,
+        success: true,
         unspent
       }
     } catch (e) {
       return {
-        status: false,
+        success: false,
         massage: 'incorrect address'
       }
     }
@@ -43,12 +43,12 @@ export class BlockchainController {
   async pushTx(@Body() pushTxHex: PushTxTransactionDto) {
     try {
       return {
-        status: true,
+        success: true,
         txid: await this.blockchainService.pushTx(pushTxHex.hex)
       }
     } catch (error) {
       return {
-        status: false,
+        success: false,
         message: error.message
       }
     }
@@ -59,12 +59,12 @@ export class BlockchainController {
       const vin = await this.blockchainService.getVinForUtxoTransaction(txid, n);
       console.log(vin)
       return {
-        status: true,
+        success: true,
         vin
       }
     } catch (e) {
       return {
-        status: false,
+        success: false,
         message: e.message
       }
     }
