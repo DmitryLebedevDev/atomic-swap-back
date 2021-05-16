@@ -44,7 +44,14 @@ export class SwapsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('sendFromPairHTLC')
   @FormatResultWs()
-  sendFromPairHTLC(@MessageBody() message: { id: number; txid: string }) {
+  sendFromPairHTLC(
+    @MessageBody()
+    message: {
+      id: number;
+      txid: string;
+      redeem: string;
+    },
+  ) {
     const { id } = message;
     const activeOrder = this.activeOrdersService.getById(id);
     this.server.sockets.connected[activeOrder.acceptor].emit(
@@ -55,12 +62,17 @@ export class SwapsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('sendToPairHTLC')
   @FormatResultWs()
   sendToPairHTLC(
-    @MessageBody() message: { id: number; txid: string; secretNumHash: string },
+    @MessageBody()
+    message: {
+      id: number;
+      txid: string;
+      redeem: string;
+    },
   ) {
     const { id } = message;
     const activeOrder = this.activeOrdersService.getById(id);
     this.server.sockets.connected[activeOrder.creator].emit(
-      'sendToPairPubKey',
+      'sendToPairHTLC',
       message,
     );
   }
