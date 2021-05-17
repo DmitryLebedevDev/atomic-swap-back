@@ -80,6 +80,9 @@ export class BlockchainService {
         vin => vin.txid === txid && vin.vout === n
       )
     )
+    if(transaction) {
+      console.log(transaction)
+    }
 
     return transaction ?
       transaction.vin.find(

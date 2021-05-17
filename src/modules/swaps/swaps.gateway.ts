@@ -54,7 +54,8 @@ export class SwapsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     const { id } = message;
     const activeOrder = this.activeOrdersService.getById(id);
-    this.server.sockets.connected[activeOrder.acceptor].emit(
+    console.log(id, message);
+    this.server.sockets.connected[activeOrder.creator].emit(
       'sendFromPairHTLC',
       message,
     );
@@ -71,7 +72,7 @@ export class SwapsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     const { id } = message;
     const activeOrder = this.activeOrdersService.getById(id);
-    this.server.sockets.connected[activeOrder.creator].emit(
+    this.server.sockets.connected[activeOrder.acceptor].emit(
       'sendToPairHTLC',
       message,
     );

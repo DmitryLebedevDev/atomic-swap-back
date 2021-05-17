@@ -69,4 +69,19 @@ export class BlockchainController {
       }
     }
   }
+  @Get('/tx/:txid')
+  async getRawTransaction(@Param('txid') txid) {
+    try {
+      return {
+        success: true,
+        transaction: await this.blockchainService.getTransaction(txid)
+      }
+    }
+    catch (e) {
+      return {
+        success: false,
+        message: 'not exist'
+      }
+    }
+  }
 }
