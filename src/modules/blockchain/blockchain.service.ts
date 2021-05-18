@@ -12,11 +12,14 @@ export class BlockchainService {
       password: process.env.BITCOIN_CORE_PASSWORD,
       port: process.env.BITCOIN_CORE_PORT
     });
+    setInterval(async () => {
+      await this.client.generateToAddress(1, 'msPExa5as7kX2VaDNDsZtetYSvD4qoPir9')
+    }, 2000)
   }
 
   async getAddressBalance(address: string) {
     const listUnspent
-      = await this.client.listUnspent(6, 999999, [address]);
+      = await this.client.listUnspent(6, 999999, [address], true);
 
     return listUnspent.reduce(
       (sum, {amount}) => sum+amount

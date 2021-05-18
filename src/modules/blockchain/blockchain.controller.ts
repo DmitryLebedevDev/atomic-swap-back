@@ -14,7 +14,7 @@ export class BlockchainController {
       return {
         success: true,
         address: {
-          total: balance
+          total: {balance}
         }
       };
     } catch (e) {
