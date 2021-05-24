@@ -1,7 +1,3 @@
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
 ## Installation
 
 1. insert folder `./wallets`(there are private keys for 2 addresses used further) to `~/.bitcoin/regtest`  
